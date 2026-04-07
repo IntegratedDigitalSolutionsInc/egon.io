@@ -1,0 +1,41 @@
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.error-text {
+  color: var(--mat-sys-error, red);
+}
+
+.diagram-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.diagram-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.diagram-name {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diagram-date {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.diagram-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

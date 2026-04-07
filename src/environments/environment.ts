@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   version: '3.1.1-dev',
+  serverStorageApiUrl: 'http://127.0.0.1:3100/api',
 };
 
 /*

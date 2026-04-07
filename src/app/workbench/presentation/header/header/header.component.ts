@@ -9,6 +9,13 @@ import { DialogService } from '../../../../domain/services/dialog.service';
 import { ExportService } from '../../../../tools/export/services/export.service';
 import { LabelDictionaryService } from '../../../../tools/label-dictionary/services/label-dictionary.service';
 import { ModelerService } from 'src/app/tools/modeler/services/modeler.service';
+import { ServerStorageService } from '../../../../tools/server-storage/services/server-storage.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  SNACKBAR_DURATION,
+  SNACKBAR_ERROR,
+  SNACKBAR_SUCCESS,
+} from '../../../../domain/entities/constants';
 
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -37,6 +44,8 @@ export class HeaderComponent {
   private readonly dialogService = inject(DialogService);
   private readonly exportService = inject(ExportService);
   private readonly labelDictionaryService = inject(LabelDictionaryService);
+  private readonly serverStorageService = inject(ServerStorageService);
+  private readonly snackbar = inject(MatSnackBar);
 
   readonly title$ = this.titleService.title$;
   readonly description$ = this.titleService.description$;
@@ -130,5 +139,42 @@ export class HeaderComponent {
 
   get isReplayable() {
     return this.replayService.isReplayable();
+  }
+
+  onSaveToServer(): void {
+    const configAndDST = this.exportService.getConfigAndDSTForExport();
+    const name = this.titleService.getTitle();
+    this.serverStorageService.saveDiagram(name, configAndDST).subscribe({
+      next: () => {
+        this.snackbar.open('Saved to server', undefined, {
+          duration: SNACKBAR_DURATION,
+          panelClass: SNACKBAR_SUCCESS,
+        });
+      },
+      error: () => {
+        this.snackbar.open('Could not save to server', undefined, {
+          duration: SNACKBAR_DURATION,
+          panelClass: SNACKBAR_ERROR,
+        });
+      },
+    });
+  }
+
+  openServerLoadDialog(): void {
+    this.serverStorageService.openLoadDialog((entry) => {
+      this.serverStorageService.loadDiagramContent(entry.id).subscribe({
+        next: (content) => {
+          const json = JSON.stringify(content);
+          const blob = new Blob([json], { type: 'application/json' });
+          this.importService.import(blob, `${entry.name}_2000-01-01.egn`);
+        },
+        error: () => {
+          this.snackbar.open('Could not load from server', undefined, {
+            duration: SNACKBAR_DURATION,
+            panelClass: SNACKBAR_ERROR,
+          });
+        },
+      });
+    });
   }
 }

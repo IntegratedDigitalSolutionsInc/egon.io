@@ -56,4 +56,8 @@ export class HeaderButtonsComponent {
   openDownloadDialog = new EventEmitter<void>();
   @Output()
   openImportFromUrlDialog = new EventEmitter<void>();
+  @Output()
+  saveToServer = new EventEmitter<void>();
+  @Output()
+  openServerLoadDialog = new EventEmitter<void>();
 }

@@ -1,4 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
@@ -13,6 +14,7 @@ import { provideImportDomainStory } from './tools/import/import.providers';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
+    provideHttpClient(),
     UntypedFormBuilder,
     {
       provide: MAT_CHECKBOX_DEFAULT_OPTIONS,

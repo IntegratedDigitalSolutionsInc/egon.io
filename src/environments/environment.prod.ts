@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
   version: '3.1.1',
+  serverStorageApiUrl: '/api',
 };

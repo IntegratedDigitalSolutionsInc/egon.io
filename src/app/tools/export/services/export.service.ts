@@ -242,6 +242,10 @@ export class ExportService {
     document.body.removeChild(element);
   }
 
+  getConfigAndDSTForExport(): ConfigAndDST {
+    return this.createConfigAndDST(this.getStoryForDownload());
+  }
+
   private getStoryForDownload(): unknown[] {
     let story = this.modelerService
       .getStory()

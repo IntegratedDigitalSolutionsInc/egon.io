@@ -41,6 +41,32 @@
       <div class="button-label">Import URL</div>
     </button>
 
+    <button
+      type="button"
+      id="buttonSaveToServer"
+      class="headerButton"
+      title="Save story to server"
+      (click)="saveToServer.emit()"
+    >
+      <span class="material-icons-outlined materialIconButton">
+        backup
+      </span>
+      <div class="button-label">Save to server</div>
+    </button>
+
+    <button
+      type="button"
+      id="buttonLoadFromServer"
+      class="headerButton"
+      title="Load story from server"
+      (click)="openServerLoadDialog.emit()"
+    >
+      <span class="material-icons-outlined materialIconButton">
+        cloud_download
+      </span>
+      <div class="button-label">Load from server</div>
+    </button>
+
     <input
       type="file"
       accept=".dst, .egn, .svg"

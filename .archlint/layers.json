@@ -85,6 +85,13 @@
             "*/unsavedChangesReminder/**"
           ],
           "mayUseAllBelow": true
+        },
+        {
+          "name": "server-storage",
+          "include": [
+            "*/server-storage/**"
+          ],
+          "mayUseAllBelow": true
         }
       ],
       "mayUseAllBelow": true

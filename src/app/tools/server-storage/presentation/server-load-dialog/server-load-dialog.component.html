@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Load from server</h2>
+
+<mat-dialog-content>
+  @if (loading) {
+    <div class="center">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+  @if (error) {
+    <p class="error-text">Could not connect to server.</p>
+  }
+  @if (!loading && !error && diagrams.length === 0) {
+    <p>No diagrams saved on server.</p>
+  }
+  @if (!loading && !error && diagrams.length > 0) {
+    <mat-list>
+      @for (diagram of diagrams; track diagram.id) {
+        <mat-list-item>
+          <div class="diagram-row">
+            <div class="diagram-info">
+              <span class="diagram-name">{{ diagram.name }}</span>
+              <span class="diagram-date">{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+            <div class="diagram-actions">
+              <button mat-button color="primary" (click)="load(diagram)">Load</button>
+              <button mat-icon-button (click)="delete(diagram.id)" title="Delete">
+                <span class="material-icons-outlined">delete</span>
+              </button>
+            </div>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>
