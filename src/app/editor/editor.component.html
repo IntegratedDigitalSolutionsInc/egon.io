@@ -1,0 +1,44 @@
+<div class="content" role="main">
+  <input
+    id="colorPicker"
+    [style.background]="color"
+    [cpPresetColors]="colorBox"
+    [(colorPicker)]="color"
+    (colorPickerClose)="onColorChanged($event)"
+    style="display: none; height: 0"
+  />
+
+  @if (showSettings$ | async) {
+    <app-settings />
+  }
+  <div
+    [class.headerAndCanvas]="
+      !(showSettings$ | async) && (showDescription$ | async)
+    "
+    [class.headerAndCanvasCollapsed]="
+      !(showSettings$ | async) && !(showDescription$ | async)
+    "
+    [class.hidden]="showSettings$ | async"
+  >
+    <app-header
+      [class.header]="showDescription$ | async"
+      [class.headerCollapsed]="!(showDescription$ | async)"
+    />
+    <div appDrag id="canvas"></div>
+  </div>
+
+  <div
+    [class.logoContainer]="!(showSettings$ | async)"
+    [class.hidden]="showSettings$ | async"
+  >
+    <span>
+      <a href="https://egon.io" target="_blank">
+        <img src="favicon.ico" height="24" alt="Egon Logo" />
+      </a>
+      |
+      <a href="https://integrated-digital.com/" target="_blank">
+        <img src="assets/logo/IDS_logo.png" height="24" alt="IDS Logo" />
+      </a>
+    </span>
+  </div>
+</div>

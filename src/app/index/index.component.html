@@ -1,0 +1,64 @@
+<mat-toolbar>
+  <span>
+    <a href="https://egon.io" target="_blank">
+      <img src="favicon.ico" height="24" alt="Egon Logo" style="vertical-align: middle" />
+    </a>
+    |
+    <a href="https://integrated-digital.com/" target="_blank">
+      <img src="assets/logo/IDS_logo.png" height="24" alt="IDS Logo" style="vertical-align: middle" />
+    </a>
+  </span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" (click)="newDiagram()">
+    <span class="material-icons-outlined">add</span>
+    New Diagram
+  </button>
+</mat-toolbar>
+
+<div class="index-content">
+  @if (loading) {
+    <div class="center">
+      <mat-spinner />
+    </div>
+  } @else if (error) {
+    <div class="center">
+      <p>Could not connect to server.</p>
+      <button mat-button (click)="loadDiagrams()">Retry</button>
+    </div>
+  } @else if (diagrams.length === 0) {
+    <div class="center empty-state">
+      <span class="material-icons-outlined empty-icon">description</span>
+      <p>No diagrams saved yet.</p>
+      <button mat-raised-button color="primary" (click)="newDiagram()">
+        Create your first diagram
+      </button>
+    </div>
+  } @else {
+    <mat-nav-list>
+      @for (diagram of diagrams; track diagram.id) {
+        <mat-list-item (click)="openDiagram(diagram)" style="cursor: pointer">
+          <span matListItemTitle>{{ diagram.name }}</span>
+          <span matListItemLine>{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+          <span matListItemMeta class="actions">
+            <button mat-button (click)="openDiagram(diagram); $event.stopPropagation()">
+              <span class="material-icons-outlined">edit</span>
+              Open
+            </button>
+            <button
+              mat-button
+              [disabled]="!diagram.hasPresentation"
+              (click)="viewPresentation(diagram); $event.stopPropagation()"
+            >
+              <span class="material-icons-outlined">slideshow</span>
+              View
+            </button>
+            <button mat-button color="warn" (click)="deleteDiagram(diagram, $event)">
+              <span class="material-icons-outlined">delete</span>
+              Delete
+            </button>
+          </span>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  }
+</div>

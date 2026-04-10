@@ -10,6 +10,13 @@ export interface DiagramEntry {
   id: string;
   name: string;
   savedAt: string;
+  hasPresentation?: boolean;
+}
+
+export interface DiagramVersion {
+  hash: string;
+  date: string;
+  message: string;
 }
 
 @Injectable({
@@ -28,10 +35,13 @@ export class ServerStorageService {
   saveDiagram(
     name: string,
     content: unknown,
+    options?: { diagramId?: string; html?: string },
   ): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.apiUrl}/diagrams`, {
       name,
       content,
+      diagramId: options?.diagramId,
+      html: options?.html,
     });
   }
 
@@ -39,11 +49,27 @@ export class ServerStorageService {
     return this.http.get<unknown>(`${this.apiUrl}/diagrams/${id}`);
   }
 
+  listVersions(id: string): Observable<DiagramVersion[]> {
+    return this.http.get<DiagramVersion[]>(
+      `${this.apiUrl}/diagrams/${id}/versions`,
+    );
+  }
+
+  loadDiagramVersion(id: string, hash: string): Observable<unknown> {
+    return this.http.get<unknown>(
+      `${this.apiUrl}/diagrams/${id}/versions/${hash}`,
+    );
+  }
+
+  getPresentationUrl(id: string): string {
+    return `${this.apiUrl}/diagrams/${id}/presentation`;
+  }
+
   deleteDiagram(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/diagrams/${id}`);
   }
 
-  openLoadDialog(onLoad: (entry: DiagramEntry) => void): void {
+  openLoadDialog(onLoad: (payload: { content: unknown; name: string }) => void): void {
     const config = new MatDialogConfig();
     config.disableClose = false;
     config.autoFocus = true;

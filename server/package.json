@@ -6,11 +6,12 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts"
+    "dev": "PORT=3100 ts-node src/server.ts"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.2",
     "fastify": "^5.3.3",
+    "simple-git": "^3.35.2",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

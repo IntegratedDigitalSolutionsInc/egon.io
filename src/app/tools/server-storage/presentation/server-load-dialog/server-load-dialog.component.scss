@@ -39,3 +39,23 @@
   align-items: center;
   flex-shrink: 0;
 }
+
+.version-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.version-info {
+  min-width: 0;
+}
+
+.version-date {
+  font-size: 0.9rem;
+}
+
+.version-actions {
+  flex-shrink: 0;
+}

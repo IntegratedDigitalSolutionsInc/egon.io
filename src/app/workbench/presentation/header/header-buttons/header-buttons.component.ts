@@ -60,4 +60,6 @@ export class HeaderButtonsComponent {
   saveToServer = new EventEmitter<void>();
   @Output()
   openServerLoadDialog = new EventEmitter<void>();
+  @Output()
+  goToIndex = new EventEmitter<void>();
 }

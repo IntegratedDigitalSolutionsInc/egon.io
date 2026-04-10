@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.index-content {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+  gap: 16px;
+}
+
+.empty-state {
+  color: #757575;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+mat-list-item {
+  border-bottom: 1px solid var(--borderGray10);
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.actions span.material-icons-outlined,
+mat-toolbar span.material-icons-outlined {
+  vertical-align: middle;
+  font-size: 18px;
+}

@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.content {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* header and Canvas*/
+
+.headerAndCanvas {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+  overflow: hidden;
+}
+
+.headerAndCanvasCollapsed {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+  overflow: hidden;
+}
+
+.settings {
+  height: 100%;
+}
+
+.header {
+  display: grid;
+  grid-template-rows: min-content 155px;
+}
+
+/* Logo Container */
+
+.logoContainer {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  right: 4px;
+  align-items: flex-end;
+  background-color: #f7f7f8;
+  margin-bottom: 4px;
+  border-width: 1px;
+  border-radius: 2px;
+  border-style: solid;
+  border-color: #b9bcc6;
+
+  span {
+    margin-left: 7px;
+    margin-right: 7px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    align-items: center;
+  }
+}
+
+.hidden {
+  height: 1px;
+  width: 1px;
+}
+
+// Material Design Overrides
+.mat-button-toggle-label-content {
+  font-size: 10pt !important;
+  padding: 0 5px !important;
+  line-height: inherit !important;
+}
+
+::ng-deep.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: white;
+}
+
+span * {
+  vertical-align: middle;
+}
+
+span {
+  height: 24px;
+}

@@ -39,6 +39,7 @@ export class ModelerService {
   private eventBus: any;
 
   private encoded: string | undefined;
+  private cleanStackIdx = -1;
 
   postInit(): void {
     this.checkCurrentVersion();
@@ -76,6 +77,11 @@ export class ModelerService {
     const exportArtifacts = this.debounce(this.saveSVG, 500);
     if (this.modeler.get) {
       this.modeler.on('commandStack.changed', exportArtifacts);
+      this.modeler.on('commandStack.changed', () => {
+        if (this.commandStack?._stackIdx === this.cleanStackIdx) {
+          this.dirtyFlagService.makeClean();
+        }
+      });
     }
 
     this.initializerService.initiateEventBusListeners(
@@ -193,9 +199,14 @@ export class ModelerService {
     }
   }
 
+  setClean(): void {
+    this.cleanStackIdx = this.commandStack?._stackIdx ?? -1;
+    this.dirtyFlagService.makeClean();
+  }
+
   reset(): void {
     this.renderStory([]);
-    this.dirtyFlagService.makeClean();
+    this.setClean();
   }
 
   importStory(domainStory: BusinessObject[], config: IconSet): void {
@@ -204,7 +215,7 @@ export class ModelerService {
     this.elementRegistryService.correctInitialize();
     this.commandStackChanged();
     this.startDebounce();
-    this.dirtyFlagService.makeClean();
+    this.setClean();
   }
 
   getStory(): BusinessObject[] {

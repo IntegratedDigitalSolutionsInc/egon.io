@@ -31,10 +31,7 @@ export class HtmlPresentationService {
   ----------------------------
   */
 
-  async downloadHTMLPresentation(
-    filename: string,
-    modeler: any,
-  ): Promise<void> {
+  async generateHtmlString(modeler: any): Promise<string> {
     modeler.fitStoryToScreen(); // fixes problem with HTML export when story is not in the visible area of the canvas
     const svgData = [];
     // export all sentences of domain story
@@ -73,7 +70,6 @@ export class HtmlPresentationService {
     }
     this.replayService.stopReplay();
 
-    // create download for presentation
     const revealjsTemplate = document.getElementById('revealjs-template');
     const dots = doT.template(revealjsTemplate?.innerHTML);
     const revealjsData = {
@@ -84,12 +80,16 @@ export class HtmlPresentationService {
       multiplexSecret: this.multiplexSecret,
       multiplexId: this.multiplexId,
     };
+    return this.fixMalformedHtmlScript(dots, revealjsData);
+  }
+
+  async downloadHTMLPresentation(
+    filename: string,
+    modeler: any,
+  ): Promise<void> {
+    const html = await this.generateHtmlString(modeler);
     const element = document.createElement('a');
-    element.setAttribute(
-      'href',
-      'data:text/html;charset=UTF-8,' +
-        this.fixMalformedHtmlScript(dots, revealjsData),
-    );
+    element.setAttribute('href', 'data:text/html;charset=UTF-8,' + html);
     element.setAttribute('download', sanitizeForDesktop(filename) + '.html');
     element.style.display = 'none';
     document.body.appendChild(element);
@@ -143,7 +143,9 @@ export class HtmlPresentationService {
 
     data = dataStart + this.createBounds(xLeft, yUp, width, height) + dataEnd;
 
-    return encodeURIComponent(data);
+    // Strip XML declaration and DOCTYPE — only the <svg> element is valid inline HTML5
+    const svgStart = data.indexOf('<svg');
+    return svgStart > 0 ? data.substring(svgStart) : data;
   }
 
   private static createBounds(

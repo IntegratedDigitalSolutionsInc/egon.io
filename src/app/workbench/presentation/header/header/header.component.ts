@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TitleService } from '../../../../tools/title/services/title.service';
 import { ReplayService } from '../../../../tools/replay/services/replay.service';
@@ -10,6 +11,8 @@ import { ExportService } from '../../../../tools/export/services/export.service'
 import { LabelDictionaryService } from '../../../../tools/label-dictionary/services/label-dictionary.service';
 import { ModelerService } from 'src/app/tools/modeler/services/modeler.service';
 import { ServerStorageService } from '../../../../tools/server-storage/services/server-storage.service';
+import { CurrentDiagramService } from '../../../../tools/server-storage/services/current-diagram.service';
+import { HtmlPresentationService } from '../../../../tools/export/services/html-presentation.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   SNACKBAR_DURATION,
@@ -45,6 +48,9 @@ export class HeaderComponent {
   private readonly exportService = inject(ExportService);
   private readonly labelDictionaryService = inject(LabelDictionaryService);
   private readonly serverStorageService = inject(ServerStorageService);
+  private readonly currentDiagramService = inject(CurrentDiagramService);
+  private readonly htmlPresentationService = inject(HtmlPresentationService);
+  private readonly router = inject(Router);
   private readonly snackbar = inject(MatSnackBar);
 
   readonly title$ = this.titleService.title$;
@@ -76,14 +82,15 @@ export class HeaderComponent {
   }
 
   createNewDomainStory(): void {
-    if (this.dirtyFlagService.dirty) {
-      this.importService.openUnsavedChangesReminderDialog(() => {
-        this.titleService.reset();
-        this.modelerService.reset();
-      });
-    } else {
+    const doNew = () => {
+      this.currentDiagramService.clearCurrentDiagram();
       this.titleService.reset();
       this.modelerService.reset();
+    };
+    if (this.dirtyFlagService.dirty) {
+      this.importService.openUnsavedChangesReminderDialog(doNew);
+    } else {
+      doNew();
     }
   }
 
@@ -144,37 +151,56 @@ export class HeaderComponent {
   onSaveToServer(): void {
     const configAndDST = this.exportService.getConfigAndDSTForExport();
     const name = this.titleService.getTitle();
-    this.serverStorageService.saveDiagram(name, configAndDST).subscribe({
-      next: () => {
-        this.snackbar.open('Saved to server', undefined, {
-          duration: SNACKBAR_DURATION,
-          panelClass: SNACKBAR_SUCCESS,
+    const diagramId = this.currentDiagramService.currentDiagramId ?? undefined;
+    const modeler = this.modelerService.getModeler();
+
+    this.htmlPresentationService.generateHtmlString(modeler).then((html) => {
+      this.serverStorageService
+        .saveDiagram(name, configAndDST, { diagramId, html })
+        .subscribe({
+          next: ({ id }) => {
+            this.currentDiagramService.setCurrentDiagram(id, name);
+            this.modelerService.setClean();
+            this.snackbar.open('Saved to server', undefined, {
+              duration: SNACKBAR_DURATION,
+              panelClass: SNACKBAR_SUCCESS,
+            });
+          },
+          error: () => {
+            this.snackbar.open('Could not save to server', undefined, {
+              duration: SNACKBAR_DURATION,
+              panelClass: SNACKBAR_ERROR,
+            });
+          },
         });
-      },
-      error: () => {
-        this.snackbar.open('Could not save to server', undefined, {
-          duration: SNACKBAR_DURATION,
-          panelClass: SNACKBAR_ERROR,
-        });
-      },
     });
   }
 
+  onGoToIndex(): void {
+    const navigate = () => {
+      this.currentDiagramService.clearCurrentDiagram();
+      this.router.navigate(['/']);
+    };
+    if (this.dirtyFlagService.dirty) {
+      this.importService.openUnsavedChangesReminderDialog(navigate);
+    } else {
+      navigate();
+    }
+  }
+
   openServerLoadDialog(): void {
-    this.serverStorageService.openLoadDialog((entry) => {
-      this.serverStorageService.loadDiagramContent(entry.id).subscribe({
-        next: (content) => {
-          const json = JSON.stringify(content);
-          const blob = new Blob([json], { type: 'application/json' });
-          this.importService.import(blob, `${entry.name}_2000-01-01.egn`);
-        },
-        error: () => {
-          this.snackbar.open('Could not load from server', undefined, {
-            duration: SNACKBAR_DURATION,
-            panelClass: SNACKBAR_ERROR,
-          });
-        },
+    const doLoad = (): void => {
+      this.serverStorageService.openLoadDialog(({ content, name }) => {
+        const json = JSON.stringify(content);
+        const blob = new Blob([json], { type: 'application/json' });
+        this.importService.import(blob, `${name}_2000-01-01.egn`);
       });
-    });
+    };
+
+    if (this.dirtyFlagService.dirty) {
+      this.importService.openUnsavedChangesReminderDialog(doLoad);
+    } else {
+      doLoad();
+    }
   }
 }

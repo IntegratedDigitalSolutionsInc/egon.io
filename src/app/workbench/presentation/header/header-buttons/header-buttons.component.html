@@ -2,6 +2,19 @@
   <div>
     <button
       type="button"
+      id="buttonGoToIndex"
+      class="headerButton"
+      title="Back to diagram index"
+      (click)="goToIndex.emit()"
+    >
+      <span class="material-icons-outlined materialIconButton">
+        home
+      </span>
+      <div class="button-label">Index</div>
+    </button>
+
+    <button
+      type="button"
       [disabled]="!isReplayable"
       [class.disabled]="!isReplayable"
       id="buttonStartReplay"
@@ -27,6 +40,14 @@
       </span>
       <div class="button-label">Import file</div>
     </button>
+    <input
+      type="file"
+      accept=".dst, .egn, .svg"
+      style="display: none"
+      id="import"
+      onclick="this.value = null"
+      (change)="import.emit()"
+    />
 
     <button
       type="button"
@@ -40,11 +61,29 @@
       </span>
       <div class="button-label">Import URL</div>
     </button>
+    <button
+      type="button"
+      [disabled]="!hasDomainStory && !hasTitle"
+      [class.disabled]="!hasDomainStory && !hasTitle"
+      class="headerButton"
+      [class.dirty]="isDirty"
+      id="export"
+      title="Export story as .egn, .svg or .png file"
+      (click)="openDownloadDialog.emit()"
+    >
+      <span class="material-icons-outlined materialIconButton">
+        file_download
+      </span>
+      <div class="button-label">Export</div>
+    </button>
 
     <button
       type="button"
       id="buttonSaveToServer"
       class="headerButton"
+      [disabled]="!hasDomainStory && !hasTitle"
+      [class.disabled]="!hasDomainStory && !hasTitle"
+      [class.dirty]="isDirty"
       title="Save story to server"
       (click)="saveToServer.emit()"
     >
@@ -64,31 +103,7 @@
       <span class="material-icons-outlined materialIconButton">
         cloud_download
       </span>
-      <div class="button-label">Load from server</div>
-    </button>
-
-    <input
-      type="file"
-      accept=".dst, .egn, .svg"
-      style="display: none"
-      id="import"
-      onclick="this.value = null"
-      (change)="import.emit()"
-    />
-    <button
-      type="button"
-      [disabled]="!hasDomainStory && !hasTitle"
-      [class.disabled]="!hasDomainStory && !hasTitle"
-      class="headerButton"
-      [class.dirty]="isDirty"
-      id="export"
-      title="Export story as .egn, .svg or .png file"
-      (click)="openDownloadDialog.emit()"
-    >
-      <span class="material-icons-outlined materialIconButton">
-        file_download
-      </span>
-      <div class="button-label">Export</div>
+      <div class="button-label">Version history</div>
     </button>
     <button
       type="button"

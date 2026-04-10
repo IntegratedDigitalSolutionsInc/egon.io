@@ -1,30 +1,34 @@
-<h2 mat-dialog-title>Load from server</h2>
+<h2 mat-dialog-title>Version history: {{ diagramName }}</h2>
 
 <mat-dialog-content>
-  @if (loading) {
+  @if (!diagramId) {
+    <p>No diagram is currently open from the server.</p>
+    <p>Go to the index page to open a diagram first.</p>
+  } @else if (loading) {
     <div class="center">
       <mat-spinner diameter="40"></mat-spinner>
     </div>
-  }
-  @if (error) {
-    <p class="error-text">Could not connect to server.</p>
-  }
-  @if (!loading && !error && diagrams.length === 0) {
-    <p>No diagrams saved on server.</p>
-  }
-  @if (!loading && !error && diagrams.length > 0) {
+  } @else if (error) {
+    <p class="error-text">Could not load version history.</p>
+    <button mat-button (click)="loadVersions()">Retry</button>
+  } @else if (versions.length === 0) {
+    <p>No versions found for this diagram.</p>
+  } @else {
     <mat-list>
-      @for (diagram of diagrams; track diagram.id) {
+      @for (version of versions; track version.hash) {
         <mat-list-item>
-          <div class="diagram-row">
-            <div class="diagram-info">
-              <span class="diagram-name">{{ diagram.name }}</span>
-              <span class="diagram-date">{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+          <div class="version-row">
+            <div class="version-info">
+              <span class="version-date">{{ version.date | date: 'yyyy-MM-dd HH:mm' }}</span>
             </div>
-            <div class="diagram-actions">
-              <button mat-button color="primary" (click)="load(diagram)">Load</button>
-              <button mat-icon-button (click)="delete(diagram.id)" title="Delete">
-                <span class="material-icons-outlined">delete</span>
+            <div class="version-actions">
+              <button
+                mat-button
+                color="primary"
+                [disabled]="loadingVersion"
+                (click)="loadVersion(version)"
+              >
+                Restore
               </button>
             </div>
           </div>
