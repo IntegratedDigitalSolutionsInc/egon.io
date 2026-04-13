@@ -240,7 +240,9 @@ async function main(): Promise<void> {
       const deletedName = allEntries.find((e) => e.id === id)?.name ?? id;
       writeIndex(allEntries.filter((e) => e.id !== id));
 
-      await commitAndPush(git, [`${id}.egn`, 'index.json'], `Delete "${deletedName}" - ${new Date().toISOString()}`);
+      const authorName = req.headers['oidc_claim_name'] as string | undefined;
+      const authorEmail = req.headers['oidc_claim_email'] as string | undefined;
+      await commitAndPush(git, [`${id}.egn`, 'index.json'], `Delete "${deletedName}" - ${new Date().toISOString()}`, authorName, authorEmail);
 
       return reply.status(204).send();
     },
