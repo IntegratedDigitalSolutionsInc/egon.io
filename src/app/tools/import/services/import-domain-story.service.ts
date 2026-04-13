@@ -22,6 +22,7 @@ import { IconSetChangedService } from '../../icon-set-config/services/icon-set-c
 import { ModelerService } from '../../modeler/services/modeler.service';
 import { ImportDialogComponent } from '../presentation/import-dialog/import-dialog.component';
 import { UnsavedChangesReminderComponent } from '../../unsavedChangesReminder/presentation/unsavedChangesReminder-dialog/unsaved-changes-reminder/unsaved-changes-reminder.component';
+import { ImportConfirmDialogComponent } from '../presentation/import-confirm-dialog/import-confirm-dialog.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -83,11 +84,15 @@ export class ImportDomainStoryService implements IconSetChangedService {
     this.modelerService.commandStackChanged();
   }
 
-  importNotDirtyFromUrl(fileUrl: string, isDirty: boolean) {
-    if (isDirty) {
-      this.openUnsavedChangesReminderDialog(() => this.importFromUrl(fileUrl));
+  openImportConfirmDialog(fn: () => void): void {
+    if (this.modelerService.getStory().length >= 1) {
+      const config = new MatDialogConfig();
+      config.disableClose = false;
+      config.autoFocus = true;
+      config.data = fn;
+      this.dialogService.openDialog(ImportConfirmDialogComponent, config);
     } else {
-      this.importFromUrl(fileUrl);
+      fn();
     }
   }
 
@@ -174,12 +179,12 @@ export class ImportDomainStoryService implements IconSetChangedService {
     return isSupported;
   }
 
-  openImportFromUrlDialog(isDirty: boolean): void {
+  openImportFromUrlDialog(): void {
     const config = new MatDialogConfig();
     config.disableClose = false;
     config.autoFocus = true;
     config.data = (fileUrl: string) =>
-      this.importNotDirtyFromUrl(fileUrl, isDirty);
+      this.openImportConfirmDialog(() => this.importFromUrl(fileUrl));
     this.dialogService.openDialog(ImportDialogComponent, config);
   }
 

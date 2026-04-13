@@ -95,13 +95,7 @@ export class HeaderComponent {
   }
 
   onImport(): void {
-    if (this.dirtyFlagService.dirty) {
-      this.importService.openUnsavedChangesReminderDialog(() =>
-        this.importService.performImport(),
-      );
-    } else {
-      this.importService.performImport();
-    }
+    this.importService.openImportConfirmDialog(() => this.importService.performImport());
   }
 
   startReplay(): void {
@@ -133,7 +127,7 @@ export class HeaderComponent {
   }
 
   openImportFromUrlDialog(): void {
-    this.importService.openImportFromUrlDialog(this.dirtyFlagService.dirty);
+    this.importService.openImportFromUrlDialog();
   }
 
   get hasDomainStory() {
