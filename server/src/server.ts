@@ -12,6 +12,11 @@ const INDEX_FILE = path.join(DATA_DIR, 'index.json');
 const GIT_REMOTE_URL = process.env['GIT_REMOTE_URL'];
 const GIT_USER_NAME = process.env['GIT_USER_NAME'] ?? 'Egon.io';
 const GIT_USER_EMAIL = process.env['GIT_USER_EMAIL'] ?? 'egon@egon.io';
+const SSH_KEY_PATH = process.env['SSH_KEY_PATH'];
+
+if (SSH_KEY_PATH) {
+  process.env['GIT_SSH_COMMAND'] = `ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes`;
+}
 
 interface DiagramEntry {
   id: string;

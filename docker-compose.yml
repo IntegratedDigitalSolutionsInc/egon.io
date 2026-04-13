@@ -16,6 +16,9 @@ services:
       - "3002:3000"
     volumes:
       - ./diagrams_data:/data/diagrams
+      - ${SSH_KEY_PATH:-~/.ssh/id_ecdsa}:/run/secrets/ssh_key:ro
     environment:
       - DATA_DIR=/data/diagrams
+      - GIT_REMOTE_URL=git@github.com:IntegratedDigitalSolutionsInc/olympic-diagrams.git
       - PORT=3000
+      - SSH_KEY_PATH=/run/secrets/ssh_key

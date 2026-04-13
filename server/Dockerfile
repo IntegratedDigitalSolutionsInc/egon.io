@@ -14,7 +14,7 @@ RUN npm run build
 FROM node:24-alpine
 WORKDIR /app
 
-RUN apk add git
+RUN apk add git openssh-client
 
 COPY package*.json ./
 RUN npm ci --omit=dev
