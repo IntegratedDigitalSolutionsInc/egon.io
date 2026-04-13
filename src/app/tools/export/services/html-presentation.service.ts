@@ -88,13 +88,16 @@ export class HtmlPresentationService {
     modeler: any,
   ): Promise<void> {
     const html = await this.generateHtmlString(modeler);
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
     const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/html;charset=UTF-8,' + html);
+    element.setAttribute('href', url);
     element.setAttribute('download', sanitizeForDesktop(filename) + '.html');
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
     element.remove();
+    URL.revokeObjectURL(url);
   }
 
   private fixMalformedHtmlScript(
