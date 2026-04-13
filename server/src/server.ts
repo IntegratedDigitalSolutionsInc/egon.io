@@ -92,7 +92,7 @@ async function commitAndPush(
 }
 
 async function main(): Promise<void> {
-  const server = Fastify({ logger: true });
+  const server = Fastify({ logger: true, bodyLimit: 104857600 });
   const git = await initGit();
 
   await server.register(fastifyCors, {
