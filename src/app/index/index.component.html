@@ -25,40 +25,73 @@
       <p>Could not connect to server.</p>
       <button mat-button (click)="loadDiagrams()">Retry</button>
     </div>
-  } @else if (diagrams.length === 0) {
-    <div class="center empty-state">
-      <span class="material-icons-outlined empty-icon">description</span>
-      <p>No diagrams saved yet.</p>
-      <button mat-raised-button color="primary" (click)="newDiagram()">
-        Create your first diagram
-      </button>
-    </div>
   } @else {
-    <mat-nav-list>
-      @for (diagram of diagrams; track diagram.id) {
-        <mat-list-item (click)="openDiagram(diagram)" style="cursor: pointer">
-          <span matListItemTitle>{{ diagram.name }}</span>
-          <span matListItemLine>{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
-          <span matListItemMeta class="actions">
-            <button mat-button (click)="openDiagram(diagram); $event.stopPropagation()">
-              <span class="material-icons-outlined">edit</span>
-              Open
+    <mat-tab-group>
+      <mat-tab label="Active">
+        @if (activeDiagrams.length === 0) {
+          <div class="center empty-state">
+            <span class="material-icons-outlined empty-icon">description</span>
+            <p>No diagrams saved yet.</p>
+            <button mat-raised-button color="primary" (click)="newDiagram()">
+              Create your first diagram
             </button>
-            <button
-              mat-button
-              [disabled]="!diagram.hasPresentation"
-              (click)="viewPresentation(diagram); $event.stopPropagation()"
-            >
-              <span class="material-icons-outlined">slideshow</span>
-              View
-            </button>
-            <button mat-button color="warn" (click)="deleteDiagram(diagram, $event)">
-              <span class="material-icons-outlined">delete</span>
-              Delete
-            </button>
-          </span>
-        </mat-list-item>
-      }
-    </mat-nav-list>
+          </div>
+        } @else {
+          <mat-nav-list>
+            @for (diagram of activeDiagrams; track diagram.id) {
+              <mat-list-item (click)="openDiagram(diagram)" style="cursor: pointer">
+                <span matListItemTitle>{{ diagram.name }}</span>
+                <span matListItemLine>{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+                <span matListItemMeta class="actions">
+                  <button mat-button (click)="openDiagram(diagram); $event.stopPropagation()">
+                    <span class="material-icons-outlined">edit</span>
+                    Open
+                  </button>
+                  <button
+                    mat-button
+                    [disabled]="!diagram.hasPresentation"
+                    (click)="viewPresentation(diagram); $event.stopPropagation()"
+                  >
+                    <span class="material-icons-outlined">slideshow</span>
+                    View
+                  </button>
+                  <button mat-button color="warn" (click)="archiveDiagram(diagram, $event)">
+                    <span class="material-icons-outlined">archive</span>
+                    Archive
+                  </button>
+                </span>
+              </mat-list-item>
+            }
+          </mat-nav-list>
+        }
+      </mat-tab>
+      <mat-tab label="Archive">
+        @if (archivedDiagrams.length === 0) {
+          <div class="center empty-state">
+            <span class="material-icons-outlined empty-icon">inventory_2</span>
+            <p>No archived diagrams.</p>
+          </div>
+        } @else {
+          <mat-nav-list>
+            @for (diagram of archivedDiagrams; track diagram.id) {
+              <mat-list-item style="cursor: default">
+                <span matListItemTitle>{{ diagram.name }}</span>
+                <span matListItemLine>{{ diagram.savedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+                <span matListItemMeta class="actions">
+                  <button mat-button (click)="unarchiveDiagram(diagram, $event)">
+                    <span class="material-icons-outlined">unarchive</span>
+                    Unarchive
+                  </button>
+                  <button mat-button color="warn" (click)="deleteDiagram(diagram, $event)">
+                    <span class="material-icons-outlined">delete</span>
+                    Delete
+                  </button>
+                </span>
+              </mat-list-item>
+            }
+          </mat-nav-list>
+        }
+      </mat-tab>
+    </mat-tab-group>
   }
 </div>

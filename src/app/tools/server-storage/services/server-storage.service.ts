@@ -11,6 +11,7 @@ export interface DiagramEntry {
   name: string;
   savedAt: string;
   hasPresentation?: boolean;
+  archived?: boolean;
 }
 
 export interface DiagramVersion {
@@ -67,6 +68,14 @@ export class ServerStorageService {
 
   deleteDiagram(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/diagrams/${id}`);
+  }
+
+  archiveDiagram(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/diagrams/${id}/archive`, {});
+  }
+
+  unarchiveDiagram(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/diagrams/${id}/unarchive`, {});
   }
 
   openLoadDialog(onLoad: (payload: { content: unknown; name: string }) => void): void {

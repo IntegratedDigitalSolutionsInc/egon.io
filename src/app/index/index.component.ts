@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
   DiagramEntry,
@@ -23,6 +24,7 @@ import { DeleteDiagramDialogComponent } from './delete-diagram-dialog.component'
     MatButtonModule,
     MatListModule,
     MatProgressSpinnerModule,
+    MatTabsModule,
     MatToolbarModule,
   ],
 })
@@ -35,6 +37,14 @@ export class IndexComponent implements OnInit {
   diagrams: DiagramEntry[] = [];
   loading = true;
   error = false;
+
+  get activeDiagrams(): DiagramEntry[] {
+    return this.diagrams.filter((d) => !d.archived);
+  }
+
+  get archivedDiagrams(): DiagramEntry[] {
+    return this.diagrams.filter((d) => d.archived);
+  }
 
   ngOnInit(): void {
     this.loadDiagrams();
@@ -83,6 +93,20 @@ export class IndexComponent implements OnInit {
           next: () => this.loadDiagrams(),
         });
       }
+    });
+  }
+
+  archiveDiagram(entry: DiagramEntry, event: MouseEvent): void {
+    event.stopPropagation();
+    this.serverStorageService.archiveDiagram(entry.id).subscribe({
+      next: () => this.loadDiagrams(),
+    });
+  }
+
+  unarchiveDiagram(entry: DiagramEntry, event: MouseEvent): void {
+    event.stopPropagation();
+    this.serverStorageService.unarchiveDiagram(entry.id).subscribe({
+      next: () => this.loadDiagrams(),
     });
   }
 }

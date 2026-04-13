@@ -22,6 +22,7 @@ interface DiagramEntry {
   id: string;
   name: string;
   savedAt: string;
+  archived?: boolean;
 }
 
 interface DiagramEntryWithMeta extends DiagramEntry {
@@ -245,6 +246,44 @@ async function main(): Promise<void> {
       await commitAndPush(git, [`${id}.egn`, 'index.json'], `Delete "${deletedName}" - ${new Date().toISOString()}`, authorName, authorEmail);
 
       return reply.status(204).send();
+    },
+  );
+
+  server.patch<{ Params: { id: string } }>(
+    '/api/diagrams/:id/archive',
+    async (req, reply) => {
+      ensureDataDir();
+      const { id } = req.params;
+      const entries = readIndex();
+      const entry = entries.find((e) => e.id === id);
+      if (!entry) {
+        return reply.status(404).send({ error: 'Diagram not found' });
+      }
+      entry.archived = true;
+      writeIndex(entries);
+      const authorName = req.headers['oidc_claim_name'] as string | undefined;
+      const authorEmail = req.headers['oidc_claim_email'] as string | undefined;
+      await commitAndPush(git, ['index.json'], `Archive "${entry.name}" - ${new Date().toISOString()}`, authorName, authorEmail);
+      return reply.send(entry);
+    },
+  );
+
+  server.patch<{ Params: { id: string } }>(
+    '/api/diagrams/:id/unarchive',
+    async (req, reply) => {
+      ensureDataDir();
+      const { id } = req.params;
+      const entries = readIndex();
+      const entry = entries.find((e) => e.id === id);
+      if (!entry) {
+        return reply.status(404).send({ error: 'Diagram not found' });
+      }
+      entry.archived = false;
+      writeIndex(entries);
+      const authorName = req.headers['oidc_claim_name'] as string | undefined;
+      const authorEmail = req.headers['oidc_claim_email'] as string | undefined;
+      await commitAndPush(git, ['index.json'], `Unarchive "${entry.name}" - ${new Date().toISOString()}`, authorName, authorEmail);
+      return reply.send(entry);
     },
   );
 
